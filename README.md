@@ -1,5 +1,8 @@
 # expressions
 
+[![Build Status](https://travis-ci.org/appsup-dart/expressions.svg?branch=master)](https://travis-ci.org/appsup-dart/expressions)
+
+
 A library to parse and evaluate simple expressions.
 
 This library can handle simple expressions, but no operations, blocks of code, control flow statements and so on.
