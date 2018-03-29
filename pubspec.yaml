@@ -1,8 +1,8 @@
 name: expressions
 description: A library to parse and evaluate simple expressions.
 version: 0.1.0
-#homepage: https://www.example.com
-#author: rbellens <email@example.com>
+homepage: https://github.com/appsup-dart
+author: Rik Bellens <rik.bellens@appsup.be>
 
 environment:
   sdk: '>=1.20.1 <2.0.0'
