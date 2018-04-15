@@ -64,44 +64,44 @@ class ExpressionEvaluator {
 
   dynamic evalBinaryExpression(BinaryExpression expression, Map<String,dynamic> context) {
     var left = eval(expression.left, context);
-    var right = eval(expression.right, context);
+    var right = ()=>eval(expression.right, context);
     switch (expression.operator) {
       case "||":
-        return left||right;
+        return left||right();
       case "&&":
-        return left&&right;
+        return left&&right();
       case "|":
-        return left|right;
+        return left|right();
       case "^":
-        return left^right;
+        return left^right();
       case "&":
-        return left&right;
+        return left&right();
       case "==":
-        return left==right;
+        return left==right();
       case "!=":
-        return left!=right;
+        return left!=right();
       case "<=":
-        return left<=right;
+        return left<=right();
       case ">=":
-        return left>=right;
+        return left>=right();
       case "<":
-        return left<right;
+        return left<right();
       case ">":
-        return left>right;
+        return left>right();
       case "<<":
-        return left<<right;
+        return left<<right();
       case ">>":
-        return left>>right;
+        return left>>right();
       case "+":
-        return left+right;
+        return left+right();
       case "-":
-        return left-right;
+        return left-right();
       case "*":
-        return left*right;
+        return left*right();
       case "/":
-        return left/right;
+        return left/right();
       case "%":
-        return left%right;
+        return left%right();
     }
     throw new ArgumentError("Unknown operator ${expression.operator} in expression");
   }
