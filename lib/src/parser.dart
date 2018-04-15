@@ -9,7 +9,7 @@ class ExpressionParser {
   ExpressionParser() {
     expression.set(binaryExpression
         .seq(conditionArguments.optional(), (a,b)=>b==null ? a : new ConditionalExpression(a, b[0], b[1])));
-    token.set(literal|unaryExpression|variable); // ignore: argument_type_not_assignable
+    token.set(literal.cast<Expression>()|unaryExpression|variable);
   }
 
   // Gobbles only identifiers
@@ -72,7 +72,7 @@ class ExpressionParser {
 
   // An individual part of a binary expression:
   // e.g. `foo.bar(baz)`, `1`, `"abc"`, `(a % 2)` (because it's in parenthesis)
-  final SettableParser<Expression> token = undefined();
+  final SettableParser<Expression> token = undefined<Expression>();
 
   // Also use a map for the binary operations but set their values to their
   // binary precedence for quick reference:
@@ -144,7 +144,7 @@ class ExpressionParser {
   // It also gobbles function calls:
   // e.g. `Math.acos(obj.angle)`
   Parser<Expression> get variable => groupOrIdentifier.seq(
-      (memberArgument|indexArgument|callArgument).star(), // ignore: argument_type_not_assignable
+      (memberArgument.cast()|indexArgument|callArgument).star(),
           (a,List b) {
         return b.fold(a, (Expression object, argument) {
           if (argument is Identifier) return new MemberExpression(object, argument);
