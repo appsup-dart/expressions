@@ -2,20 +2,21 @@
 library expressions.parser;
 
 import 'expressions.dart';
-import 'package:typedparser/typedparser.dart';
+import 'package:petitparser/petitparser.dart';
 
 class ExpressionParser {
 
   ExpressionParser() {
     expression.set(binaryExpression
-        .seq(conditionArguments.optional(), (a,b)=>b==null ? a : new ConditionalExpression(a, b[0], b[1])));
-    token.set(literal.cast<Expression>()|unaryExpression|variable);
+        .seq(conditionArguments.optional())
+        .map((l)=>l[1]==null ? l[0] : new ConditionalExpression(l[0], l[1][0], l[1][1])));
+    token.set((literal|unaryExpression|variable).cast<Expression>());
   }
 
   // Gobbles only identifiers
   // e.g.: `foo`, `_value`, `$x1`
   Parser<Identifier> get identifier =>
-      (word()|char(r"$")).plus().precededBy(digit().not()).flatten()
+      (digit().not()&(word()|char(r"$")).plus()).flatten()
           .map((v)=>new Identifier(v));
 
   // Parse simple numeric literals: `12`, `3.4`, `.5`.
@@ -24,31 +25,27 @@ class ExpressionParser {
           (char(".")&digit().plus())|
           (char("x")&digit().plus())|
           (anyOf("Ee")&anyOf("+-").optional()&digit().plus())
-      ).optional()))
-          .mapParser((v) {
-        try {
-          return epsilon(new Literal(num.parse(v), v));
-        } on FormatException {
-          return failure();
-        }
+      ).optional())).flatten()
+      .map((v) {
+        return new Literal(num.parse(v), v);
       });
 
-  Parser<String> get escapedChar => anyOf("nrtbfv\"'").precededBy(char(r"\"));
+  Parser<String> get escapedChar => (char(r"\")&anyOf("nrtbfv\"'")).pick(1);
 
   String unescape(String v) => v.replaceAllMapped(new RegExp("\\\\[nrtbf\"']"),
           (v)=>const {"n":"\n","r":"\r","t":"\t","b":"\b","f":"\f","v":"\v",
         '"': '"', "'": "'"}[v.group(0).substring(1)]);
 
   Parser<Literal> get sqStringLiteral =>
-      (anyOf(r"'\").neg()|escapedChar).star().flatten().surroundedBy(char("'"))
+      (char("'")&(anyOf(r"'\").neg()|escapedChar).star().flatten()&char("'")).pick(1)
           .map((v)=>new Literal(unescape(v), "'$v'"));
   Parser<Literal> get dqStringLiteral =>
-      (anyOf(r'"\').neg()|escapedChar).star().flatten().surroundedBy(char('"'))
+      (char('"')&(anyOf(r'"\').neg()|escapedChar).star().flatten()&char('"')).pick(1)
           .map((v)=>new Literal(unescape(v), '"$v"'));
 
   // Parses a string literal, staring with single or double quotes with basic
   // support for escape codes e.g. `"hello world"`, `'this is\nJSEP'`
-  Parser<Literal> get stringLiteral => sqStringLiteral.or(dqStringLiteral);
+  Parser<Literal> get stringLiteral => sqStringLiteral.or(dqStringLiteral).cast();
 
   // Parses a boolean literal
   Parser<Literal> get boolLiteral => (string("true")|string("false"))
@@ -65,10 +62,10 @@ class ExpressionParser {
   // This function assumes that it needs to gobble the opening bracket
   // and then tries to gobble the expressions as arguments.
   Parser<Literal> get arrayLiteral =>
-      arguments.surroundedBy(char("[").trim(),char("]").trim())
+      (char("[").trim()&arguments&char("]").trim()).pick(1)
           .map((l)=>new Literal(l, "$l"));
 
-  Parser<Literal> get literal => numericLiteral|stringLiteral|boolLiteral|nullLiteral|arrayLiteral;
+  Parser<Literal> get literal => (numericLiteral|stringLiteral|boolLiteral|nullLiteral|arrayLiteral).cast();
 
   // An individual part of a binary expression:
   // e.g. `foo.bar(baz)`, `1`, `"abc"`, `(a % 2)` (because it's in parenthesis)
@@ -90,13 +87,15 @@ class ExpressionParser {
   // This function is responsible for gobbling an individual expression,
   // e.g. `1`, `1+2`, `a+(b*2)-Math.sqrt(2)`
   Parser<String> get binaryOperation => binaryOperations.keys
-      .map<Parser<String>>((v)=>string(v)).reduce((a,b)=>a|b).trim();
+      .map<Parser<String>>((v)=>string(v)).reduce((a,b)=>(a|b).cast<String>()).trim();
 
-  Parser<Expression> get binaryExpression =>
-      token.seq(binaryOperation.seq(token, (a,b)=>[a,b]).star(), (first,extras) {
+  Parser<Expression> get binaryExpression => token.separatedBy(binaryOperation)
+      .map((l) {
+        var first = l[0];
         var stack = <dynamic>[first];
-        for (var v in extras) {
-          var op = v[0];
+
+        for (var i=1;i<l.length;i+=2) {
+          var op = l[i];
           var prec = BinaryExpression.precedenceForOperator(op);
 
           // Reduce: make a binary expression from the three topmost entries.
@@ -109,7 +108,7 @@ class ExpressionParser {
             stack.add(node);
           }
 
-          var node = v[1];
+          var node = l[i+1];
           stack.addAll([op, node]);
         }
 
@@ -120,16 +119,17 @@ class ExpressionParser {
           i -= 2;
         }
         return node;
-      });
+  });
 
   // Use a quickly-accessible map to store all of the unary operators
   // Values are set to `true` (it really doesn't matter)
   static const _unaryOperations = const ['-', '!', '~', '+'];
 
   Parser<UnaryExpression> get unaryExpression =>
-      enumIndex(_unaryOperations)
-          .map((i)=>_unaryOperations[i]).trim()
-          .seq(token, (a,b)=>new UnaryExpression(a,b));
+      _unaryOperations
+          .map<Parser<String>>((v)=>string(v)).reduce((a,b)=>(a|b).cast<String>()).trim()
+          .seq(token)
+          .map((l)=>new UnaryExpression(l[0],l[1]));
 
   // Gobbles a list of arguments within the context of a function call
   // or array literal. This function also assumes that the opening character
@@ -137,15 +137,17 @@ class ExpressionParser {
   // until the terminator character `)` or `]` is encountered.
   // e.g. `foo(bar, baz)`, `my_func()`, or `[bar, baz]`
   Parser<List<Expression>> get arguments =>
-      expression.separatedBy(char(",").trim());
+      expression.separatedBy(char(",").trim(), includeSeparators: false).castList();
 
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`
   // It also gobbles function calls:
   // e.g. `Math.acos(obj.angle)`
   Parser<Expression> get variable => groupOrIdentifier.seq(
-      (memberArgument.cast()|indexArgument|callArgument).star(),
-          (a,List b) {
+      (memberArgument.cast()|indexArgument|callArgument).star())
+      .map((l) {
+        var a = l[0] as Expression;
+        var b = l[1] as List;
         return b.fold(a, (Expression object, argument) {
           if (argument is Identifier) return new MemberExpression(object, argument);
           if (argument is Expression) return new IndexExpression(object, argument);
@@ -160,18 +162,19 @@ class ExpressionParser {
   // and then tries to gobble everything within that parenthesis, assuming
   // that the next thing it should see is the close parenthesis. If not,
   // then the expression probably doesn't have a `)`
-  Parser<Expression> get group => expression.trim().surroundedBy(char("("),char(")"));
+  Parser<Expression> get group => (char("(")&expression.trim()&char(")")).pick(1);
 
-  Parser<Expression> get groupOrIdentifier => group|thisExpression|identifier.map((v)=>new Variable(v));
+  Parser<Expression> get groupOrIdentifier =>
+      (group|thisExpression|identifier.map((v)=>new Variable(v))).cast();
 
-  Parser<Identifier> get memberArgument => identifier.precededBy(char("."));
-  Parser<Expression> get indexArgument => expression.trim().surroundedBy(char("["),char("]"));
-  Parser<List<Expression>> get callArgument => arguments.surroundedBy(char("("),char(")"));
+  Parser<Identifier> get memberArgument => (char(".")&identifier).pick(1);
+  Parser<Expression> get indexArgument => (char("[")&expression.trim()&char("]")).pick(1);
+  Parser<List<Expression>> get callArgument => (char("(")&arguments&char(")")).pick(1);
 
   // Ternary expression: test ? consequent : alternate
   Parser<List<Expression>> get conditionArguments =>
-      expression.surroundedBy(char("?").trim(), char(":").trim())
-          .seq(expression, (a,b)=>[a,b]);
+      (char("?").trim()&expression&char(":").trim()).pick(1)
+          .seq(expression).castList();
 
   final SettableParser<Expression> expression = undefined();
 
