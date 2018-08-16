@@ -1,4 +1,3 @@
-
 library expressions.core;
 
 import 'package:quiver/core.dart';
@@ -8,7 +7,7 @@ class Identifier {
   final String name;
 
   Identifier(this.name) {
-    assert(name!=null);
+    assert(name != null);
     assert(name != "null");
     assert(name != "false");
     assert(name != "true");
@@ -20,7 +19,6 @@ class Identifier {
 }
 
 abstract class Expression {
-
   String toTokenString();
 
   static final ExpressionParser _parser = new ExpressionParser();
@@ -30,23 +28,21 @@ abstract class Expression {
 }
 
 abstract class SimpleExpression implements Expression {
-
   @override
   String toTokenString() => toString();
 }
 
 abstract class CompoundExpression implements Expression {
-
   @override
   String toTokenString() => "($this)";
 }
 
 class Literal extends SimpleExpression {
-
   final dynamic value;
   final String raw;
 
-  Literal(this.value, [String raw]) : raw = raw ?? (value is String ? '"$value"' /*TODO escape*/ : "$value");
+  Literal(this.value, [String raw])
+      : raw = raw ?? (value is String ? '"$value"' /*TODO escape*/ : "$value");
 
   @override
   String toString() => raw;
@@ -55,8 +51,7 @@ class Literal extends SimpleExpression {
   int get hashCode => value.hashCode;
 
   @override
-  bool operator==(dynamic other) => other is Literal && other.value==value;
-
+  bool operator ==(dynamic other) => other is Literal && other.value == value;
 }
 
 class Variable extends SimpleExpression {
@@ -68,13 +63,9 @@ class Variable extends SimpleExpression {
   String toString() => "$identifier";
 }
 
-class ThisExpression extends SimpleExpression {
-
-
-}
+class ThisExpression extends SimpleExpression {}
 
 class MemberExpression extends SimpleExpression {
-
   final Expression object;
 
   final Identifier property;
@@ -86,7 +77,6 @@ class MemberExpression extends SimpleExpression {
 }
 
 class IndexExpression extends SimpleExpression {
-
   final Expression object;
 
   final Expression index;
@@ -121,7 +111,6 @@ class UnaryExpression extends SimpleExpression {
 }
 
 class BinaryExpression extends CompoundExpression {
-
   final String operator;
   final Expression left;
   final Expression right;
@@ -135,8 +124,14 @@ class BinaryExpression extends CompoundExpression {
 
   @override
   String toString() {
-    var l = (left is BinaryExpression&&(left as BinaryExpression).precedence<precedence) ? "($left)" : "$left";
-    var r = (right is BinaryExpression&&(right as BinaryExpression).precedence<precedence) ? "($right)" : "$right";
+    var l = (left is BinaryExpression &&
+            (left as BinaryExpression).precedence < precedence)
+        ? "($left)"
+        : "$left";
+    var r = (right is BinaryExpression &&
+            (right as BinaryExpression).precedence < precedence)
+        ? "($right)"
+        : "$right";
     return "$l$operator$r";
   }
 
@@ -144,9 +139,11 @@ class BinaryExpression extends CompoundExpression {
   int get hashCode => hash3(left, operator, right);
 
   @override
-  bool operator==(dynamic other) => other is BinaryExpression&&
-      other.left==left&&other.operator==operator&&other.right==right;
-
+  bool operator ==(dynamic other) =>
+      other is BinaryExpression &&
+      other.left == left &&
+      other.operator == operator &&
+      other.right == right;
 }
 
 class ConditionalExpression extends CompoundExpression {
@@ -156,8 +153,6 @@ class ConditionalExpression extends CompoundExpression {
 
   ConditionalExpression(this.test, this.consequent, this.alternate);
 
-
   @override
   String toString() => "$test ? $consequent : $alternate";
 }
-
