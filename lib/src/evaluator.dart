@@ -70,6 +70,8 @@ class ExpressionEvaluator {
         return left||right();
       case "&&":
         return left&&right();
+      case "??":
+        return left??right();
       case "|":
         return left|right();
       case "^":
