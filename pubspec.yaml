@@ -1,6 +1,6 @@
 name: expressions
 description: A library to parse and evaluate simple expressions.
-version: 0.1.2
+version: 0.1.3
 homepage: https://github.com/appsup-dart
 author: Rik Bellens <rik.bellens@appsup.be>
 
@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   quiver: ">=0.24.0 <3.0.0"
-  petitparser: ^2.0.0
+  petitparser: ">=2.0.0 <4.0.0"
 
 
 dev_dependencies:

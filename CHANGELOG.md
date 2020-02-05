@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- petitparser 3 compatibility
+
 ## 0.1.2
 
 - Support Dart 2 in pubspec.yaml

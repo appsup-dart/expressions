@@ -3,6 +3,7 @@ import 'package:expressions/expressions.dart';
 import 'package:expressions/src/parser.dart';
 import 'package:test/test.dart';
 import 'dart:math';
+import 'package:petitparser/petitparser.dart';
 
 main() {
 

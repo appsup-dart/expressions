@@ -2,6 +2,7 @@ library expressions.core;
 
 import 'package:quiver/core.dart';
 import 'parser.dart';
+import 'package:petitparser/petitparser.dart';
 
 class Identifier {
   final String name;
