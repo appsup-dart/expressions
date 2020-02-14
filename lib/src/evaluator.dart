@@ -33,7 +33,9 @@ class ExpressionEvaluator {
   }
 
   dynamic evalLiteral(Literal literal, Map<String, dynamic> context) {
-    return literal.value;
+    var value = literal.value;
+    if (value is List) return value.map((e) => eval(e, context)).toList();
+    return value;
   }
 
   dynamic evalVariable(Variable variable, Map<String, dynamic> context) {

@@ -213,5 +213,15 @@ void main() {
         expect(evaluator.eval(Expression.parse(e), context), r);
       });
     });
+    test('array expression', () {
+      var context = <String, dynamic>{};
+      var expressions = {
+        '[1,2,3]': [1, 2, 3]
+      };
+
+      expressions.forEach((e, r) {
+        expect(evaluator.eval(Expression.parse(e), context), r);
+      });
+    });
   });
 }
