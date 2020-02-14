@@ -85,11 +85,17 @@ class ExpressionParser {
           .pick(1)
           .map((l) => new Literal(l, '$l'));
 
+  Parser<Literal> get mapLiteral =>
+      (char('{').trim() & mapArguments & char('}').trim())
+          .pick(1)
+          .map((l) => new Literal(l, '$l'));
+
   Parser<Literal> get literal => (numericLiteral |
           stringLiteral |
           boolLiteral |
           nullLiteral |
-          arrayLiteral)
+          arrayLiteral |
+          mapLiteral)
       .cast();
 
   // An individual part of a binary expression:
@@ -181,6 +187,14 @@ class ExpressionParser {
       .separatedBy(char(',').trim(), includeSeparators: false)
       .castList<Expression>()
       .optional([]);
+
+  Parser<Map<Expression, Expression>> get mapArguments =>
+      (expression & char(':').trim() & expression)
+          .map((l) => MapEntry<Expression, Expression>(l[0], l[2]))
+          .separatedBy(char(',').trim(), includeSeparators: false)
+          .castList<MapEntry<Expression, Expression>>()
+          .map((l) => Map.fromEntries(l))
+          .optional({});
 
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`

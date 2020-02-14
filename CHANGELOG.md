@@ -3,6 +3,7 @@
 ## 0.1.4
 
 - fix parsing empty array or argument list
+- parse map expressions
 
 ## 0.1.3
 

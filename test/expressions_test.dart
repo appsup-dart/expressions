@@ -91,6 +91,22 @@ void main() {
       }
     });
 
+    test('map literal', () {
+      for (var e in {
+        '{"hello": 1, "world": 2}': {
+          new Literal('hello'): new Literal(1),
+          new Literal('world'): new Literal(2),
+        },
+        '{}': {}
+      }.entries) {
+        var v = e.key;
+        var w = parser.mapLiteral.end().parse(v);
+        expect(w.isSuccess, isTrue, reason: 'Failed parsing `$v`');
+        expect(w.value.value, e.value);
+        expect(w.value.raw, v);
+      }
+    });
+
     test('array literal', () {
       for (var e in {
         '[1, 2, 3]': [new Literal(1), new Literal(2), new Literal(3)],
@@ -217,6 +233,16 @@ void main() {
       var context = <String, dynamic>{};
       var expressions = {
         '[1,2,3]': [1, 2, 3]
+      };
+
+      expressions.forEach((e, r) {
+        expect(evaluator.eval(Expression.parse(e), context), r);
+      });
+    });
+    test('map expression', () {
+      var context = <String, dynamic>{};
+      var expressions = {
+        '{"hello": "world"}': {'hello': 'world'}
       };
 
       expressions.forEach((e, r) {

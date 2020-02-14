@@ -35,6 +35,10 @@ class ExpressionEvaluator {
   dynamic evalLiteral(Literal literal, Map<String, dynamic> context) {
     var value = literal.value;
     if (value is List) return value.map((e) => eval(e, context)).toList();
+    if (value is Map) {
+      return value.map(
+          (key, value) => MapEntry(eval(key, context), eval(value, context)));
+    }
     return value;
   }
 
