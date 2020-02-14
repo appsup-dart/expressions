@@ -6,24 +6,30 @@ class ExpressionEvaluator {
   const ExpressionEvaluator();
 
   dynamic eval(Expression expression, Map<String, dynamic> context) {
-    if (expression == null) throw new ArgumentError.notNull("expression");
+    if (expression == null) throw new ArgumentError.notNull('expression');
     if (expression is Literal) return evalLiteral(expression, context);
     if (expression is Variable) return evalVariable(expression, context);
     if (expression is ThisExpression) return evalThis(expression, context);
-    if (expression is MemberExpression)
+    if (expression is MemberExpression) {
       return evalMemberExpression(expression, context);
-    if (expression is IndexExpression)
+    }
+    if (expression is IndexExpression) {
       return evalIndexExpression(expression, context);
-    if (expression is CallExpression)
+    }
+    if (expression is CallExpression) {
       return evalCallExpression(expression, context);
-    if (expression is UnaryExpression)
+    }
+    if (expression is UnaryExpression) {
       return evalUnaryExpression(expression, context);
-    if (expression is BinaryExpression)
+    }
+    if (expression is BinaryExpression) {
       return evalBinaryExpression(expression, context);
-    if (expression is ConditionalExpression)
+    }
+    if (expression is ConditionalExpression) {
       return evalConditionalExpression(expression, context);
+    }
     throw new ArgumentError(
-        "Unknown expression type '${expression.runtimeType}");
+        "Unknown expression type '${expression.runtimeType}'");
   }
 
   dynamic evalLiteral(Literal literal, Map<String, dynamic> context) {
@@ -35,12 +41,12 @@ class ExpressionEvaluator {
   }
 
   dynamic evalThis(ThisExpression expression, Map<String, dynamic> context) {
-    return context["this"];
+    return context['this'];
   }
 
   dynamic evalMemberExpression(
       MemberExpression expression, Map<String, dynamic> context) {
-    throw new UnsupportedError("Member expressions not supported");
+    throw new UnsupportedError('Member expressions not supported');
   }
 
   dynamic evalIndexExpression(
@@ -59,16 +65,16 @@ class ExpressionEvaluator {
       UnaryExpression expression, Map<String, dynamic> context) {
     var argument = eval(expression.argument, context);
     switch (expression.operator) {
-      case "-":
+      case '-':
         return -argument;
-      case "+":
+      case '+':
         return argument;
-      case "!":
+      case '!':
         return !argument;
-      case "~":
+      case '~':
         return ~argument;
     }
-    throw new ArgumentError("Unknown unary operator ${expression.operator}");
+    throw new ArgumentError('Unknown unary operator ${expression.operator}');
   }
 
   dynamic evalBinaryExpression(
@@ -76,45 +82,45 @@ class ExpressionEvaluator {
     var left = eval(expression.left, context);
     var right = () => eval(expression.right, context);
     switch (expression.operator) {
-      case "||":
+      case '||':
         return left || right();
-      case "&&":
+      case '&&':
         return left && right();
-      case "|":
+      case '|':
         return left | right();
-      case "^":
+      case '^':
         return left ^ right();
-      case "&":
+      case '&':
         return left & right();
-      case "==":
+      case '==':
         return left == right();
-      case "!=":
+      case '!=':
         return left != right();
-      case "<=":
+      case '<=':
         return left <= right();
-      case ">=":
+      case '>=':
         return left >= right();
-      case "<":
+      case '<':
         return left < right();
-      case ">":
+      case '>':
         return left > right();
-      case "<<":
+      case '<<':
         return left << right();
-      case ">>":
+      case '>>':
         return left >> right();
-      case "+":
+      case '+':
         return left + right();
-      case "-":
+      case '-':
         return left - right();
-      case "*":
+      case '*':
         return left * right();
-      case "/":
+      case '/':
         return left / right();
-      case "%":
+      case '%':
         return left % right();
     }
     throw new ArgumentError(
-        "Unknown operator ${expression.operator} in expression");
+        'Unknown operator ${expression.operator} in expression');
   }
 
   dynamic evalConditionalExpression(

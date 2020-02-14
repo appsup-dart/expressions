@@ -15,17 +15,17 @@ class ExpressionParser {
   // Gobbles only identifiers
   // e.g.: `foo`, `_value`, `$x1`
   Parser<Identifier> get identifier =>
-      (digit().not() & (word() | char(r"$")).plus())
+      (digit().not() & (word() | char(r'$')).plus())
           .flatten()
           .map((v) => new Identifier(v));
 
   // Parse simple numeric literals: `12`, `3.4`, `.5`.
-  Parser<Literal> get numericLiteral => ((digit() | char(".")).and() &
+  Parser<Literal> get numericLiteral => ((digit() | char('.')).and() &
               (digit().star() &
-                  ((char(".") & digit().plus()) |
-                          (char("x") & digit().plus()) |
-                          (anyOf("Ee") &
-                              anyOf("+-").optional() &
+                  ((char('.') & digit().plus()) |
+                          (char('x') & digit().plus()) |
+                          (anyOf('Ee') &
+                              anyOf('+-').optional() &
                               digit().plus()))
                       .optional()))
           .flatten()
@@ -33,19 +33,19 @@ class ExpressionParser {
         return new Literal(num.parse(v), v);
       });
 
-  Parser<String> get escapedChar => (char(r"\") & anyOf("nrtbfv\"'")).pick(1);
+  Parser<String> get escapedChar => (char(r'\') & anyOf("nrtbfv\"'")).pick(1);
 
   String unescape(String v) => v.replaceAllMapped(
       new RegExp("\\\\[nrtbf\"']"),
       (v) => const {
-            "n": "\n",
-            "r": "\r",
-            "t": "\t",
-            "b": "\b",
-            "f": "\f",
-            "v": "\v",
-            '"': '"',
-            "'": "'"
+            'n': '\n',
+            'r': '\r',
+            't': '\t',
+            'b': '\b',
+            'f': '\f',
+            'v': '\v',
+            "'": "'",
+            '"': '"'
           }[v.group(0).substring(1)]);
 
   Parser<Literal> get sqStringLiteral => (char("'") &
@@ -61,29 +61,29 @@ class ExpressionParser {
       .map((v) => new Literal(unescape(v), '"$v"'));
 
   // Parses a string literal, staring with single or double quotes with basic
-  // support for escape codes e.g. `"hello world"`, `'this is\nJSEP'`
+  // support for escape codes e.g. `'hello world'`, `'this is\nJSEP'`
   Parser<Literal> get stringLiteral =>
       sqStringLiteral.or(dqStringLiteral).cast();
 
   // Parses a boolean literal
-  Parser<Literal> get boolLiteral => (string("true") | string("false"))
-      .map((v) => new Literal(v == "true", v));
+  Parser<Literal> get boolLiteral => (string('true') | string('false'))
+      .map((v) => new Literal(v == 'true', v));
 
   // Parses the null literal
   Parser<Literal> get nullLiteral =>
-      string("null").map((v) => new Literal(null, v));
+      string('null').map((v) => new Literal(null, v));
 
   // Parses the this literal
   Parser<ThisExpression> get thisExpression =>
-      string("this").map((v) => new ThisExpression());
+      string('this').map((v) => new ThisExpression());
 
   // Responsible for parsing Array literals `[1, 2, 3]`
   // This function assumes that it needs to gobble the opening bracket
   // and then tries to gobble the expressions as arguments.
   Parser<Literal> get arrayLiteral =>
-      (char("[").trim() & arguments & char("]").trim())
+      (char('[').trim() & arguments & char(']').trim())
           .pick(1)
-          .map((l) => new Literal(l, "$l"));
+          .map((l) => new Literal(l, '$l'));
 
   Parser<Literal> get literal => (numericLiteral |
           stringLiteral |
@@ -93,7 +93,7 @@ class ExpressionParser {
       .cast();
 
   // An individual part of a binary expression:
-  // e.g. `foo.bar(baz)`, `1`, `"abc"`, `(a % 2)` (because it's in parenthesis)
+  // e.g. `foo.bar(baz)`, `1`, `'abc'`, `(a % 2)` (because it's in parenthesis)
   final SettableParser<Expression> token = undefined<Expression>();
 
   // Also use a map for the binary operations but set their values to their
@@ -178,7 +178,7 @@ class ExpressionParser {
   // until the terminator character `)` or `]` is encountered.
   // e.g. `foo(bar, baz)`, `my_func()`, or `[bar, baz]`
   Parser<List<Expression>> get arguments => expression
-      .separatedBy(char(",").trim(), includeSeparators: false)
+      .separatedBy(char(',').trim(), includeSeparators: false)
       .castList();
 
   // Gobble a non-literal variable name. This variable name may include properties
@@ -191,13 +191,16 @@ class ExpressionParser {
         var a = l[0] as Expression;
         var b = l[1] as List;
         return b.fold(a, (Expression object, argument) {
-          if (argument is Identifier)
+          if (argument is Identifier) {
             return new MemberExpression(object, argument);
-          if (argument is Expression)
+          }
+          if (argument is Expression) {
             return new IndexExpression(object, argument);
-          if (argument is List<Expression>)
+          }
+          if (argument is List<Expression>) {
             return new CallExpression(object, argument);
-          throw new ArgumentError("Invalid type ${argument.runtimeType}");
+          }
+          throw new ArgumentError('Invalid type ${argument.runtimeType}');
         });
       });
 
@@ -207,22 +210,22 @@ class ExpressionParser {
   // that the next thing it should see is the close parenthesis. If not,
   // then the expression probably doesn't have a `)`
   Parser<Expression> get group =>
-      (char("(") & expression.trim() & char(")")).pick(1);
+      (char('(') & expression.trim() & char(')')).pick(1);
 
   Parser<Expression> get groupOrIdentifier =>
       (group | thisExpression | identifier.map((v) => new Variable(v))).cast();
 
-  Parser<Identifier> get memberArgument => (char(".") & identifier).pick(1);
+  Parser<Identifier> get memberArgument => (char('.') & identifier).pick(1);
 
   Parser<Expression> get indexArgument =>
-      (char("[") & expression.trim() & char("]")).pick(1);
+      (char('[') & expression.trim() & char(']')).pick(1);
 
   Parser<List<Expression>> get callArgument =>
-      (char("(") & arguments & char(")")).pick(1);
+      (char('(') & arguments & char(')')).pick(1);
 
   // Ternary expression: test ? consequent : alternate
   Parser<List<Expression>> get conditionArguments =>
-      (char("?").trim() & expression & char(":").trim())
+      (char('?').trim() & expression & char(':').trim())
           .pick(1)
           .seq(expression)
           .castList();

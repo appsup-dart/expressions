@@ -9,10 +9,10 @@ class Identifier {
 
   Identifier(this.name) {
     assert(name != null);
-    assert(name != "null");
-    assert(name != "false");
-    assert(name != "true");
-    assert(name != "this");
+    assert(name != 'null');
+    assert(name != 'false');
+    assert(name != 'true');
+    assert(name != 'this');
   }
 
   @override
@@ -35,7 +35,7 @@ abstract class SimpleExpression implements Expression {
 
 abstract class CompoundExpression implements Expression {
   @override
-  String toTokenString() => "($this)";
+  String toTokenString() => '($this)';
 }
 
 class Literal extends SimpleExpression {
@@ -43,7 +43,7 @@ class Literal extends SimpleExpression {
   final String raw;
 
   Literal(this.value, [String raw])
-      : raw = raw ?? (value is String ? '"$value"' /*TODO escape*/ : "$value");
+      : raw = raw ?? (value is String ? '"$value"' /*TODO escape*/ : '$value');
 
   @override
   String toString() => raw;
@@ -61,7 +61,7 @@ class Variable extends SimpleExpression {
   Variable(this.identifier);
 
   @override
-  String toString() => "$identifier";
+  String toString() => '$identifier';
 }
 
 class ThisExpression extends SimpleExpression {}
@@ -74,7 +74,7 @@ class MemberExpression extends SimpleExpression {
   MemberExpression(this.object, this.property);
 
   @override
-  String toString() => "${object.toTokenString()}.$property";
+  String toString() => '${object.toTokenString()}.$property';
 }
 
 class IndexExpression extends SimpleExpression {
@@ -85,7 +85,7 @@ class IndexExpression extends SimpleExpression {
   IndexExpression(this.object, this.index);
 
   @override
-  String toString() => "${object.toTokenString()}[$index]";
+  String toString() => '${object.toTokenString()}[$index]';
 }
 
 class CallExpression extends SimpleExpression {
@@ -95,7 +95,7 @@ class CallExpression extends SimpleExpression {
   CallExpression(this.callee, this.arguments);
 
   @override
-  String toString() => "${callee.toTokenString()}(${arguments.join(", ")})";
+  String toString() => '${callee.toTokenString()}(${arguments.join(', ')})';
 }
 
 class UnaryExpression extends SimpleExpression {
@@ -105,10 +105,10 @@ class UnaryExpression extends SimpleExpression {
 
   final bool prefix;
 
-  UnaryExpression(this.operator, this.argument, {this.prefix: true});
+  UnaryExpression(this.operator, this.argument, {this.prefix = true});
 
   @override
-  String toString() => "$operator$argument";
+  String toString() => '$operator$argument';
 }
 
 class BinaryExpression extends CompoundExpression {
@@ -127,13 +127,13 @@ class BinaryExpression extends CompoundExpression {
   String toString() {
     var l = (left is BinaryExpression &&
             (left as BinaryExpression).precedence < precedence)
-        ? "($left)"
-        : "$left";
+        ? '($left)'
+        : '$left';
     var r = (right is BinaryExpression &&
             (right as BinaryExpression).precedence < precedence)
-        ? "($right)"
-        : "$right";
-    return "$l$operator$r";
+        ? '($right)'
+        : '$right';
+    return '$l$operator$r';
   }
 
   @override
@@ -155,5 +155,5 @@ class ConditionalExpression extends CompoundExpression {
   ConditionalExpression(this.test, this.consequent, this.alternate);
 
   @override
-  String toString() => "$test ? $consequent : $alternate";
+  String toString() => '$test ? $consequent : $alternate';
 }
