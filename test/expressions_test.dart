@@ -92,10 +92,14 @@ void main() {
     });
 
     test('array literal', () {
-      for (var v in <String>['[1, 2, 3]']) {
+      for (var e in {
+        '[1, 2, 3]': [new Literal(1), new Literal(2), new Literal(3)],
+        '[]': []
+      }.entries) {
+        var v = e.key;
         var w = parser.arrayLiteral.end().parse(v);
         expect(w.isSuccess, isTrue, reason: 'Failed parsing `$v`');
-        expect(w.value.value, [new Literal(1), new Literal(2), new Literal(3)]);
+        expect(w.value.value, e.value);
         expect(w.value.raw, v);
       }
 
@@ -193,8 +197,9 @@ void main() {
         'y': 4,
         'z': 5,
         'sqrt': sqrt,
+        'sayHi': () => 'hi',
       };
-      var expressions = {'sqrt(x*x+y*y)': 5};
+      var expressions = {'sqrt(x*x+y*y)': 5, 'sayHi()': 'hi'};
 
       expressions.forEach((e, r) {
         expect(evaluator.eval(Expression.parse(e), context), r);

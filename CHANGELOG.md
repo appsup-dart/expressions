@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+- fix parsing empty array or argument list
+
 ## 0.1.3
 
 - petitparser 3 compatibility

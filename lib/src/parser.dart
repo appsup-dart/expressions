@@ -179,7 +179,8 @@ class ExpressionParser {
   // e.g. `foo(bar, baz)`, `my_func()`, or `[bar, baz]`
   Parser<List<Expression>> get arguments => expression
       .separatedBy(char(',').trim(), includeSeparators: false)
-      .castList();
+      .castList<Expression>()
+      .optional([]);
 
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`
