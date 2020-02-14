@@ -8,7 +8,7 @@ class ExpressionParser {
     expression.set(binaryExpression.seq(conditionArguments.optional()).map(
         (l) => l[1] == null
             ? l[0]
-            : new ConditionalExpression(l[0], l[1][0], l[1][1])));
+            : ConditionalExpression(l[0], l[1][0], l[1][1])));
     token.set((literal | unaryExpression | variable).cast<Expression>());
   }
 
@@ -17,7 +17,7 @@ class ExpressionParser {
   Parser<Identifier> get identifier =>
       (digit().not() & (word() | char(r'$')).plus())
           .flatten()
-          .map((v) => new Identifier(v));
+          .map((v) => Identifier(v));
 
   // Parse simple numeric literals: `12`, `3.4`, `.5`.
   Parser<Literal> get numericLiteral => ((digit() | char('.')).and() &
@@ -30,13 +30,13 @@ class ExpressionParser {
                       .optional()))
           .flatten()
           .map((v) {
-        return new Literal(num.parse(v), v);
+        return Literal(num.parse(v), v);
       });
 
   Parser<String> get escapedChar => (char(r'\') & anyOf("nrtbfv\"'")).pick(1);
 
   String unescape(String v) => v.replaceAllMapped(
-      new RegExp("\\\\[nrtbf\"']"),
+      RegExp("\\\\[nrtbf\"']"),
       (v) => const {
             'n': '\n',
             'r': '\r',
@@ -52,13 +52,13 @@ class ExpressionParser {
           (anyOf(r"'\").neg() | escapedChar).star().flatten() &
           char("'"))
       .pick(1)
-      .map((v) => new Literal(unescape(v), "'$v'"));
+      .map((v) => Literal(unescape(v), "'$v'"));
 
   Parser<Literal> get dqStringLiteral => (char('"') &
           (anyOf(r'"\').neg() | escapedChar).star().flatten() &
           char('"'))
       .pick(1)
-      .map((v) => new Literal(unescape(v), '"$v"'));
+      .map((v) => Literal(unescape(v), '"$v"'));
 
   // Parses a string literal, staring with single or double quotes with basic
   // support for escape codes e.g. `'hello world'`, `'this is\nJSEP'`
@@ -66,16 +66,16 @@ class ExpressionParser {
       sqStringLiteral.or(dqStringLiteral).cast();
 
   // Parses a boolean literal
-  Parser<Literal> get boolLiteral => (string('true') | string('false'))
-      .map((v) => new Literal(v == 'true', v));
+  Parser<Literal> get boolLiteral =>
+      (string('true') | string('false')).map((v) => Literal(v == 'true', v));
 
   // Parses the null literal
   Parser<Literal> get nullLiteral =>
-      string('null').map((v) => new Literal(null, v));
+      string('null').map((v) => Literal(null, v));
 
   // Parses the this literal
   Parser<ThisExpression> get thisExpression =>
-      string('this').map((v) => new ThisExpression());
+      string('this').map((v) => ThisExpression());
 
   // Responsible for parsing Array literals `[1, 2, 3]`
   // This function assumes that it needs to gobble the opening bracket
@@ -83,12 +83,12 @@ class ExpressionParser {
   Parser<Literal> get arrayLiteral =>
       (char('[').trim() & arguments & char(']').trim())
           .pick(1)
-          .map((l) => new Literal(l, '$l'));
+          .map((l) => Literal(l, '$l'));
 
   Parser<Literal> get mapLiteral =>
       (char('{').trim() & mapArguments & char('}').trim())
           .pick(1)
-          .map((l) => new Literal(l, '$l'));
+          .map((l) => Literal(l, '$l'));
 
   Parser<Literal> get literal => (numericLiteral |
           stringLiteral |
@@ -105,7 +105,7 @@ class ExpressionParser {
   // Also use a map for the binary operations but set their values to their
   // binary precedence for quick reference:
   // see [Order of operations](http://en.wikipedia.org/wiki/Order_of_operations#Programming_language)
-  static const Map<String, int> binaryOperations = const {
+  static const Map<String, int> binaryOperations = {
     '||': 1,
     '&&': 2,
     '|': 3,
@@ -150,7 +150,7 @@ class ExpressionParser {
             var right = stack.removeLast();
             var op = stack.removeLast();
             var left = stack.removeLast();
-            var node = new BinaryExpression(op, left, right);
+            var node = BinaryExpression(op, left, right);
             stack.add(node);
           }
 
@@ -161,7 +161,7 @@ class ExpressionParser {
         var i = stack.length - 1;
         var node = stack[i];
         while (i > 1) {
-          node = new BinaryExpression(stack[i - 1], stack[i - 2], node);
+          node = BinaryExpression(stack[i - 1], stack[i - 2], node);
           i -= 2;
         }
         return node;
@@ -169,14 +169,14 @@ class ExpressionParser {
 
   // Use a quickly-accessible map to store all of the unary operators
   // Values are set to `true` (it really doesn't matter)
-  static const _unaryOperations = const ['-', '!', '~', '+'];
+  static const _unaryOperations = ['-', '!', '~', '+'];
 
   Parser<UnaryExpression> get unaryExpression => _unaryOperations
       .map<Parser<String>>((v) => string(v))
       .reduce((a, b) => (a | b).cast<String>())
       .trim()
       .seq(token)
-      .map((l) => new UnaryExpression(l[0], l[1]));
+      .map((l) => UnaryExpression(l[0], l[1]));
 
   // Gobbles a list of arguments within the context of a function call
   // or array literal. This function also assumes that the opening character
@@ -207,15 +207,15 @@ class ExpressionParser {
         var b = l[1] as List;
         return b.fold(a, (Expression object, argument) {
           if (argument is Identifier) {
-            return new MemberExpression(object, argument);
+            return MemberExpression(object, argument);
           }
           if (argument is Expression) {
-            return new IndexExpression(object, argument);
+            return IndexExpression(object, argument);
           }
           if (argument is List<Expression>) {
-            return new CallExpression(object, argument);
+            return CallExpression(object, argument);
           }
-          throw new ArgumentError('Invalid type ${argument.runtimeType}');
+          throw ArgumentError('Invalid type ${argument.runtimeType}');
         });
       });
 
@@ -228,7 +228,7 @@ class ExpressionParser {
       (char('(') & expression.trim() & char(')')).pick(1);
 
   Parser<Expression> get groupOrIdentifier =>
-      (group | thisExpression | identifier.map((v) => new Variable(v))).cast();
+      (group | thisExpression | identifier.map((v) => Variable(v))).cast();
 
   Parser<Identifier> get memberArgument => (char('.') & identifier).pick(1);
 

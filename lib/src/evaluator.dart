@@ -6,7 +6,7 @@ class ExpressionEvaluator {
   const ExpressionEvaluator();
 
   dynamic eval(Expression expression, Map<String, dynamic> context) {
-    if (expression == null) throw new ArgumentError.notNull('expression');
+    if (expression == null) throw ArgumentError.notNull('expression');
     if (expression is Literal) return evalLiteral(expression, context);
     if (expression is Variable) return evalVariable(expression, context);
     if (expression is ThisExpression) return evalThis(expression, context);
@@ -28,8 +28,7 @@ class ExpressionEvaluator {
     if (expression is ConditionalExpression) {
       return evalConditionalExpression(expression, context);
     }
-    throw new ArgumentError(
-        "Unknown expression type '${expression.runtimeType}'");
+    throw ArgumentError("Unknown expression type '${expression.runtimeType}'");
   }
 
   dynamic evalLiteral(Literal literal, Map<String, dynamic> context) {
@@ -52,7 +51,7 @@ class ExpressionEvaluator {
 
   dynamic evalMemberExpression(
       MemberExpression expression, Map<String, dynamic> context) {
-    throw new UnsupportedError('Member expressions not supported');
+    throw UnsupportedError('Member expressions not supported');
   }
 
   dynamic evalIndexExpression(
@@ -80,7 +79,7 @@ class ExpressionEvaluator {
       case '~':
         return ~argument;
     }
-    throw new ArgumentError('Unknown unary operator ${expression.operator}');
+    throw ArgumentError('Unknown unary operator ${expression.operator}');
   }
 
   dynamic evalBinaryExpression(
@@ -125,7 +124,7 @@ class ExpressionEvaluator {
       case '%':
         return left % right();
     }
-    throw new ArgumentError(
+    throw ArgumentError(
         'Unknown operator ${expression.operator} in expression');
   }
 

@@ -6,7 +6,7 @@ import 'package:petitparser/petitparser.dart';
 
 void main() {
   group('parse', () {
-    var parser = new ExpressionParser();
+    var parser = ExpressionParser();
 
     test('identifier', () {
       for (var v in ['foo', '_value', r'$x1']) {
@@ -94,8 +94,8 @@ void main() {
     test('map literal', () {
       for (var e in {
         '{"hello": 1, "world": 2}': {
-          new Literal('hello'): new Literal(1),
-          new Literal('world'): new Literal(2),
+          Literal('hello'): Literal(1),
+          Literal('world'): Literal(2),
         },
         '{}': {}
       }.entries) {
@@ -109,7 +109,7 @@ void main() {
 
     test('array literal', () {
       for (var e in {
-        '[1, 2, 3]': [new Literal(1), new Literal(2), new Literal(3)],
+        '[1, 2, 3]': [Literal(1), Literal(2), Literal(3)],
         '[]': []
       }.entries) {
         var v = e.key;

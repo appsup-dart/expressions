@@ -27,7 +27,7 @@ void example_2() {
   var expression = Expression.parse("'Hello '+person.name");
 
   // Create context containing all the variables and functions used in the expression
-  var context = {'person': new Person('Jane')};
+  var context = {'person': Person('Jane')};
 
   // The default evaluator can not handle member expressions like `person.name`.
   // When you want to use these kind of expressions, you'll need to create a
