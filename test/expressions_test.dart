@@ -87,7 +87,7 @@ void main() {
       for (var v in <String>['this']) {
         var w = parser.thisExpression.end().parse(v);
         expect(w.isSuccess, isTrue, reason: 'Failed parsing `$v`');
-        expect(w.value, new isInstanceOf<ThisExpression>());
+        expect(w.value, isA<ThisExpression>());
       }
     });
 
