@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- add `Expression.tryParse` method
+
 ## 0.1.4
 
 - fix parsing empty array or argument list
