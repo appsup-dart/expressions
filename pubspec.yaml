@@ -2,7 +2,6 @@ name: expressions
 description: A library to parse and evaluate simple expressions.
 version: 0.1.5
 homepage: https://github.com/appsup-dart
-author: Rik Bellens <rik.bellens@appsup.be>
 
 environment:
   sdk: '>=2.0.0 <3.0.0'
