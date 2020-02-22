@@ -250,4 +250,14 @@ void main() {
       });
     });
   });
+
+  group('failure handling', () {
+    test('Expression.parse() throws on an invalid expression', () {
+      expect(() => Expression.parse('5 1 6'), throwsA(isA<ParserException>()));
+    });
+
+    test('Expression.tryParse() returns null on an invalid expression', () {
+      expect(Expression.tryParse('5 1 6'), null);
+    });
+  });
 }
