@@ -8,7 +8,6 @@ class Identifier {
   final String name;
 
   Identifier(this.name) {
-    assert(name != null);
     assert(name != 'null');
     assert(name != 'false');
     assert(name != 'true');
@@ -24,7 +23,7 @@ abstract class Expression {
 
   static final ExpressionParser _parser = ExpressionParser();
 
-  static Expression tryParse(String formattedString) {
+  static Expression? tryParse(String formattedString) {
     final result = _parser.expression.end().parse(formattedString);
     return result.isSuccess ? result.value : null;
   }
@@ -47,7 +46,7 @@ class Literal extends SimpleExpression {
   final dynamic value;
   final String raw;
 
-  Literal(this.value, [String raw])
+  Literal(this.value, [String? raw])
       : raw = raw ?? (value is String ? '"$value"' /*TODO escape*/ : '$value');
 
   @override
@@ -124,7 +123,7 @@ class BinaryExpression extends CompoundExpression {
   BinaryExpression(this.operator, this.left, this.right);
 
   static int precedenceForOperator(String operator) =>
-      ExpressionParser.binaryOperations[operator];
+      ExpressionParser.binaryOperations[operator]!;
 
   int get precedence => precedenceForOperator(operator);
 

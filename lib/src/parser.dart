@@ -46,7 +46,7 @@ class ExpressionParser {
             'v': '\v',
             "'": "'",
             '"': '"'
-          }[v.group(0).substring(1)]);
+          }[v.group(0)!.substring(1)]!);
 
   Parser<Literal> get sqStringLiteral => (char("'") &
           (anyOf(r"'\").neg() | escapedChar).star().flatten() &
@@ -186,7 +186,7 @@ class ExpressionParser {
   Parser<List<Expression>> get arguments => expression
       .separatedBy(char(',').trim(), includeSeparators: false)
       .castList<Expression>()
-      .optional([]);
+      .optionalWith([]);
 
   Parser<Map<Expression, Expression>> get mapArguments =>
       (expression & char(':').trim() & expression)
@@ -194,7 +194,7 @@ class ExpressionParser {
           .separatedBy(char(',').trim(), includeSeparators: false)
           .castList<MapEntry<Expression, Expression>>()
           .map((l) => Map.fromEntries(l))
-          .optional({});
+          .optionalWith({});
 
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`
