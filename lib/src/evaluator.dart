@@ -6,7 +6,6 @@ class ExpressionEvaluator {
   const ExpressionEvaluator();
 
   dynamic eval(Expression expression, Map<String, dynamic> context) {
-    if (expression == null) throw ArgumentError.notNull('expression');
     if (expression is Literal) return evalLiteral(expression, context);
     if (expression is Variable) return evalVariable(expression, context);
     if (expression is ThisExpression) return evalThis(expression, context);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- null-safety
+
 ## 0.1.5
 
 - add `Expression.tryParse` method
