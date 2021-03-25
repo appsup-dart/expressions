@@ -249,6 +249,55 @@ void main() {
         expect(evaluator.eval(Expression.parse(e), context), r);
       });
     });
+
+    group('member expressions', () {
+      test('toString member', () {
+        var evaluator = ExpressionEvaluator(memberAccessors: [
+          MemberAccessor<Object?>({'toString': (v) => v.toString})
+        ]);
+
+        var expression = Expression.parse('x.toString()');
+
+        expect(evaluator.eval(expression, {'x': null}), 'null');
+        expect(evaluator.eval(expression, {'x': 1}), '1');
+        expect(evaluator.eval(expression, {'x': true}), 'true');
+        expect(evaluator.eval(expression, {'x': DateTime(2020, 1, 1)}),
+            '2020-01-01 00:00:00.000');
+      });
+
+      test('Uri members', () {
+        var evaluator = ExpressionEvaluator(memberAccessors: [
+          MemberAccessor<Uri>({
+            'host': (v) => v.host,
+            'path': (v) => v.path,
+            'scheme': (v) => v.scheme,
+            'queryParameters': (v) => v.queryParameters,
+          })
+        ]);
+
+        var context = {'x': Uri.parse('http://localhost/index.html?lang=nl')};
+
+        expect(
+            evaluator.eval(Expression.parse('x.host'), context), 'localhost');
+        expect(
+            evaluator.eval(Expression.parse('x.path'), context), '/index.html');
+        expect(evaluator.eval(Expression.parse('x.scheme'), context), 'http');
+        expect(evaluator.eval(Expression.parse('x.queryParameters'), context),
+            {'lang': 'nl'});
+      });
+
+      test('Map members', () {
+        var evaluator =
+            ExpressionEvaluator(memberAccessors: [MemberAccessor.mapAccessor]);
+
+        var context = {
+          'x': {'y': 1, 'z': 2}
+        };
+
+        expect(evaluator.eval(Expression.parse('x.y'), context), 1);
+        expect(evaluator.eval(Expression.parse('x.z'), context), 2);
+      });
+    });
   });
 
   group('failure handling', () {

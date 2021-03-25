@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- add `memberAccessors` argument to `ExpressionEvaluator` that defines how to handle member expressions
+- add `ExpressionEvaluator.async` constructor to create an async expression evaluator that applies expressions to the values of streams 
+
 ## 0.2.0
 
 - null-safety

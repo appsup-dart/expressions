@@ -152,7 +152,7 @@ class BinaryExpression extends CompoundExpression {
 }
 
 class ConditionalExpression extends CompoundExpression {
-  final BinaryExpression test;
+  final Expression test;
   final Expression consequent;
   final Expression alternate;
 

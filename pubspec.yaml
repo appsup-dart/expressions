@@ -1,6 +1,6 @@
 name: expressions
 description: A library to parse and evaluate simple dart and javascript like expressions.
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/appsup-dart
 
 environment:
@@ -9,6 +9,8 @@ environment:
 dependencies:
   quiver: ^3.0.0
   petitparser: ^4.0.2
+  rxdart: ^0.26.0
+  fake_async: ^1.2.0
 
 
 dev_dependencies:
