@@ -33,7 +33,8 @@ class ExpressionParser {
         return Literal(num.parse(v), v);
       });
 
-  Parser<String> get escapedChar => (char(r'\') & anyOf("nrtbfv\"'")).pick(1);
+  Parser<String> get escapedChar =>
+      (char(r'\') & anyOf("nrtbfv\"'")).pick(1).cast();
 
   String unescape(String v) => v.replaceAllMapped(
       RegExp("\\\\[nrtbf\"']"),
@@ -225,18 +226,19 @@ class ExpressionParser {
   // that the next thing it should see is the close parenthesis. If not,
   // then the expression probably doesn't have a `)`
   Parser<Expression> get group =>
-      (char('(') & expression.trim() & char(')')).pick(1);
+      (char('(') & expression.trim() & char(')')).pick(1).cast();
 
   Parser<Expression> get groupOrIdentifier =>
       (group | thisExpression | identifier.map((v) => Variable(v))).cast();
 
-  Parser<Identifier> get memberArgument => (char('.') & identifier).pick(1);
+  Parser<Identifier> get memberArgument =>
+      (char('.') & identifier).pick(1).cast();
 
   Parser<Expression> get indexArgument =>
-      (char('[') & expression.trim() & char(']')).pick(1);
+      (char('[') & expression.trim() & char(']')).pick(1).cast();
 
   Parser<List<Expression>> get callArgument =>
-      (char('(') & arguments & char(')')).pick(1);
+      (char('(') & arguments & char(')')).pick(1).cast();
 
   // Ternary expression: test ? consequent : alternate
   Parser<List<Expression>> get conditionArguments =>

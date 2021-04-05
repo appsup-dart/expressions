@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Support petitparser 4.1.0
+
 ## 0.2.1
 
 - add `memberAccessors` argument to `ExpressionEvaluator` that defines how to handle member expressions
