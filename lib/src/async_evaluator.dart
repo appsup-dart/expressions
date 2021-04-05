@@ -3,7 +3,11 @@ import 'dart:async';
 import 'package:expressions/expressions.dart';
 import 'package:rxdart/rxdart.dart';
 
-Stream _asStream(v) => v is Stream ? v : Stream.value(v);
+Stream _asStream(v) => v is Stream
+    ? v
+    : v is Future
+        ? Stream.fromFuture(v)
+        : Stream.value(v);
 Literal _asLiteral(v) {
   if (v is Map) {
     return Literal(v.map((k, v) => MapEntry(_asLiteral(k), _asLiteral(v))));

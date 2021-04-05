@@ -2,6 +2,7 @@
 
 ## 0.2.2
 
+- `ExpressionEvaluator.async` now also handles futures 
 - Support petitparser 4.1.0
 
 ## 0.2.1

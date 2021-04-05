@@ -18,6 +18,17 @@ void main() {
 
       expect(await f.toList(), [false, true]);
     });
+
+    test('Binary expression with future', () async {
+      var expression = Expression.parse('x > 70');
+
+      var evaluator = AsyncExpressionEvaluator();
+
+      var f = evaluator.eval(expression, {'x': Future.value(50)});
+
+      expect(await f.toList(), [false]);
+    });
+
     test('Binary expression with two streams', () async {
       return fakeAsync((async) async {
         var expression = Expression.parse('x > y');
@@ -100,6 +111,16 @@ void main() {
       });
 
       expect(await f.toList(), ['hello', 'world']);
+    });
+    test('Call expression with future result', () async {
+      var expression = Expression.parse('f()');
+
+      var evaluator = AsyncExpressionEvaluator();
+
+      var f =
+          evaluator.eval(expression, {'f': () => Future.value('hello world')});
+
+      expect(await f.toList(), ['hello world']);
     });
     test('Call expression with non stream result', () async {
       var expression = Expression.parse('f()');

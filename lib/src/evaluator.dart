@@ -30,8 +30,9 @@ import 'package:meta/meta.dart';
 ///
 /// An async [ExpressionEvaluator] can be created with the
 /// [ExpressionEvaluator.async] constructor. An async expression evaluator can
-/// handle operands and arguments that are streams and will apply the expression
-/// on each value of those streams. The result is always a stream.
+/// handle operands and arguments that are streams or futures and will apply the
+/// expression on each value of those streams or futures. The result is always a
+/// stream.
 ///
 /// For example:
 ///
