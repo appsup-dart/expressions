@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2+1
+
+- Support rxdart ^0.27
+
 ## 0.2.2
 
 - `ExpressionEvaluator.async` now also handles futures 
