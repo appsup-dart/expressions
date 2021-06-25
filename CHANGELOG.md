@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- upgrade rxdart dependency to 0.27.0
+
 ## 0.2.2
 
 - `ExpressionEvaluator.async` now also handles futures 
