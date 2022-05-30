@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3+1
+
+- upgrade petitparser to 5.0.0
+
 ## 0.2.3
 
 - upgrade rxdart dependency to 0.27.0
