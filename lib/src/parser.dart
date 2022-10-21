@@ -238,11 +238,11 @@ class ExpressionParser {
       (char('[') & expression.trim() & char(']')).pick(1).cast();
 
   Parser<List<Expression>> get callArgument =>
-      (char('(') & arguments & char(')')).pick(1).cast();
+      (char('(') & arguments.trim() & char(')')).pick(1).cast();
 
   // Ternary expression: test ? consequent : alternate
   Parser<List<Expression>> get conditionArguments =>
-      (char('?').trim() & expression & char(':').trim())
+      (char('?').trim() & expression.trim() & char(':').trim())
           .pick(1)
           .seq(expression)
           .castList();

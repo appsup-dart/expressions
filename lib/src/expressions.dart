@@ -24,12 +24,12 @@ abstract class Expression {
   static final ExpressionParser _parser = ExpressionParser();
 
   static Expression? tryParse(String formattedString) {
-    final result = _parser.expression.end().parse(formattedString);
+    final result = _parser.expression.trim().end().parse(formattedString);
     return result.isSuccess ? result.value : null;
   }
 
   static Expression parse(String formattedString) =>
-      _parser.expression.end().parse(formattedString).value;
+      _parser.expression.trim().end().parse(formattedString).value;
 }
 
 abstract class SimpleExpression implements Expression {
