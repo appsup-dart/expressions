@@ -3,7 +3,6 @@
  - **FIX**: parsing string with \\. ([7ec99cbd](https://github.com/appsup-dart/expressions/commit/7ec99cbd1ac005cd0150d224ca13fd4ea9fafd8a))
  - **FEAT**: support for the truncating division operator ~/. ([69566483](https://github.com/appsup-dart/expressions/commit/695664837460bc3f0bf9eeebdb5e68a2fb1cc976))
 
-# Changelog
 
 # 0.2.4
 
