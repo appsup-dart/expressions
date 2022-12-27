@@ -34,7 +34,7 @@ class ExpressionParser {
       });
 
   Parser<String> get escapedChar =>
-      (char(r'\') & anyOf("nrtbfv\"'")).pick(1).cast();
+      (char(r'\') & anyOf("nrtbfv\"'\\")).pick(1).cast();
 
   String unescape(String v) => v.replaceAllMapped(
       RegExp("\\\\[nrtbf\"']"),

@@ -43,6 +43,7 @@ void main() {
         '"qf sf q"',
         '"qfqsd\'qsfd"',
         '"qsdf\\tqs\\"qsdf"',
+        r'"\\"',
       ]) {
         var w = parser.stringLiteral.end().parse(v);
         expect(w.isSuccess, isTrue, reason: 'Failed parsing `$v`');
