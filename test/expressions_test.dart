@@ -184,7 +184,8 @@ void main() {
         '1+2': 3,
         '-1+2': 1,
         '1+4-5%2*3': 2,
-        'x*x+y*y==z*z': true
+        'x*x+y*y==z*z': true,
+        'n ?? 1': 1,
       };
 
       expressions.forEach((e, r) {
