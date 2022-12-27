@@ -125,7 +125,8 @@ class ExpressionParser {
     '-': 9,
     '*': 10,
     '/': 10,
-    '%': 10
+    '%': 10,
+    '~/': 10,
   };
 
   // This function is responsible for gobbling an individual expression,

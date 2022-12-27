@@ -179,7 +179,9 @@ class ExpressionEvaluator {
         return left / right();
       case '%':
         return left % right();
-      case "??":
+      case '~/':
+        return left ~/ right();
+      case '??':
         return left ?? right();
     }
     throw ArgumentError(
