@@ -297,6 +297,29 @@ void main() {
         expect(evaluator.eval(Expression.parse('x.y'), context), 1);
         expect(evaluator.eval(Expression.parse('x.z'), context), 2);
       });
+
+      test('leading and trailing whitespace around expression', () {
+        var evaluator = ExpressionEvaluator();
+
+        expect(evaluator.eval(Expression.parse(' 42'), {}), 42);
+        expect(evaluator.eval(Expression.parse('42 '), {}), 42);
+        expect(evaluator.eval(Expression.parse(' 42 '), {}), 42);
+      });
+
+      test('function with whitespace in arguments', () {
+        var evaluator = ExpressionEvaluator();
+
+        final context = {
+          'func': () => 42,
+          'func1': (a) => 42,
+          'func2': (a, b) => 42,
+        };
+
+        expect(evaluator.eval(Expression.parse('func()'), context), 42);
+        expect(evaluator.eval(Expression.parse('func( )'), context), 42);
+        expect(evaluator.eval(Expression.parse('func1( 1 )'), context), 42);
+        expect(evaluator.eval(Expression.parse('func2( 1, 2 )'), context), 42);
+      });
     });
   });
 
