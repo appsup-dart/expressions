@@ -179,6 +179,8 @@ class ExpressionEvaluator {
         return left / right();
       case '%':
         return left % right();
+      case "??":
+        return left ?? right();
     }
     throw ArgumentError(
         'Unknown operator ${expression.operator} in expression');

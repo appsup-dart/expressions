@@ -107,6 +107,7 @@ class ExpressionParser {
   // binary precedence for quick reference:
   // see [Order of operations](http://en.wikipedia.org/wiki/Order_of_operations#Programming_language)
   static const Map<String, int> binaryOperations = {
+    '??': 0,
     '||': 1,
     '&&': 2,
     '|': 3,
