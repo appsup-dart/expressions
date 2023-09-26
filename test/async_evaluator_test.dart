@@ -43,7 +43,7 @@ void main() {
           'y': controllerY.stream,
         });
 
-        var current;
+        bool? current;
         var done = false;
         stream.listen((v) => current = v, onDone: () => done = true);
 
@@ -81,7 +81,7 @@ void main() {
           'y': 20,
         });
 
-        var current;
+        Object? current;
         stream.listen((v) => current = v);
 
         async.flushMicrotasks();
@@ -148,7 +148,7 @@ void main() {
           'f': (a, b, c) => a + b + c,
         });
 
-        var current;
+        int? current;
         var done = false;
         stream.listen((v) => current = v, onDone: () => done = true);
 
@@ -197,7 +197,7 @@ void main() {
           'f': (x) => x == 'y' ? controllerY.stream : controllerZ.stream,
         });
 
-        var current;
+        int? current;
         var done = false;
         stream.listen((v) => current = v, onDone: () => done = true);
 
@@ -255,7 +255,7 @@ void main() {
           'z': controllerZ.stream,
         });
 
-        var current;
+        int? current;
         var done = false;
         stream.listen((v) => current = v, onDone: () => done = true);
 
@@ -299,7 +299,7 @@ void main() {
           'y': controllerY.stream,
         });
 
-        var current;
+        int? current;
         var done = false;
         stream.listen((v) => current = v, onDone: () => done = true);
 

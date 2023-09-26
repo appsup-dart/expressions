@@ -1,3 +1,24 @@
+## 0.3.0
+
+- Migrated to `petitparser: ^6.0.1`.
+- Fixed lints.
+
+- Added GitHub Workflow `Dart CI`, with test jobs for `vm` and `chrome`. 
+
+- Updated Dart SDK constraint due to dependencies that require it.:
+  - sdk: '>=3.0.0 <4.0.0'
+
+- Updated dependencies:
+  - quiver: ^3.2.1
+  - petitparser: ^6.0.1
+  - rxdart: ^0.27.7
+  - fake_async: ^1.3.1 (only used in tests: moved to `dev_dependencies`)
+  - meta: ^1.10.0
+  - test: ^1.24.6
+  - lints: ^2.1.1
+    - `pedantic` was discontinued and replaced by `lints`.
+  - dependency_validator: ^3.2.2
+
 ## 0.2.5
 
  - **FIX**: parsing string with \\. ([7ec99cbd](https://github.com/appsup-dart/expressions/commit/7ec99cbd1ac005cd0150d224ca13fd4ea9fafd8a))

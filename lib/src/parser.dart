@@ -137,7 +137,9 @@ class ExpressionParser {
       .trim();
 
   Parser<Expression> get binaryExpression =>
-      token.separatedBy(binaryOperation).map((l) {
+      token.plusSeparated(binaryOperation).map((sl) {
+        var l = sl.sequential.toList();
+
         var first = l[0];
         var stack = <dynamic>[first];
 
@@ -187,15 +189,15 @@ class ExpressionParser {
   // until the terminator character `)` or `]` is encountered.
   // e.g. `foo(bar, baz)`, `my_func()`, or `[bar, baz]`
   Parser<List<Expression>> get arguments => expression
-      .separatedBy(char(',').trim(), includeSeparators: false)
-      .castList<Expression>()
+      .plusSeparated(char(',').trim())
+      .map((sl) => sl.elements)
       .optionalWith([]);
 
   Parser<Map<Expression, Expression>> get mapArguments =>
       (expression & char(':').trim() & expression)
           .map((l) => MapEntry<Expression, Expression>(l[0], l[2]))
-          .separatedBy(char(',').trim(), includeSeparators: false)
-          .castList<MapEntry<Expression, Expression>>()
+          .plusSeparated(char(',').trim())
+          .map((sl) => sl.elements)
           .map((l) => Map.fromEntries(l))
           .optionalWith({});
 
