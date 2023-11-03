@@ -1,3 +1,8 @@
+## 0.2.5+1
+
+ - **REFACTOR**: upgrade `petitparser` dependency. ([3c773ccc](https://github.com/appsup-dart/expressions/commit/3c773ccc9a2e64d8264de32d042df4bc3b6a1fee))
+ - **DOCS**: fix CHANGELOG.md. ([4f9dcb2c](https://github.com/appsup-dart/expressions/commit/4f9dcb2c6c29321d57494437aac389183dd9cdb4))
+
 ## 0.2.5
 
  - **FIX**: parsing string with \\. ([7ec99cbd](https://github.com/appsup-dart/expressions/commit/7ec99cbd1ac005cd0150d224ca13fd4ea9fafd8a))
