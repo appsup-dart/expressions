@@ -25,7 +25,7 @@ abstract class Expression {
 
   static Expression? tryParse(String formattedString) {
     final result = _parser.expression.trim().end().parse(formattedString);
-    return result.isSuccess ? result.value : null;
+    return result is Success ? result.value : null;
   }
 
   static Expression parse(String formattedString) =>
