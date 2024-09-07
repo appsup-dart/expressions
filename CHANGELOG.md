@@ -1,3 +1,7 @@
+## 0.2.5+2
+
+ - **REFACTOR**: support for rxdart ^0.28.0. ([fc936d03](https://github.com/appsup-dart/expressions/commit/fc936d03350cf301f1d7c3edb8fb95d5c8f71c14))
+
 ## 0.2.5+1
 
  - **REFACTOR**: upgrade `petitparser` dependency. ([3c773ccc](https://github.com/appsup-dart/expressions/commit/3c773ccc9a2e64d8264de32d042df4bc3b6a1fee))
