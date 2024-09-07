@@ -188,9 +188,10 @@ void main() {
 
         var evaluator = AsyncExpressionEvaluator();
 
-        var controllerX = StreamController();
-        var controllerY = StreamController();
-        var controllerZ = StreamController();
+        // using the onCancel methods here to prevent the issue https://github.com/google/quiver-dart/issues/583 and  https://github.com/dart-lang/sdk/issues/40131#issuecomment-2335991349
+        var controllerX = StreamController(onCancel: () async {});
+        var controllerY = StreamController(onCancel: () async {});
+        var controllerZ = StreamController(onCancel: () async {});
 
         var stream = evaluator.eval(expression, {
           'x': controllerX.stream,
