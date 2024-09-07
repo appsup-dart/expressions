@@ -56,7 +56,7 @@ class Literal extends SimpleExpression {
   int get hashCode => value.hashCode;
 
   @override
-  bool operator ==(dynamic other) => other is Literal && other.value == value;
+  bool operator ==(Object other) => other is Literal && other.value == value;
 }
 
 class Variable extends SimpleExpression {
@@ -144,7 +144,7 @@ class BinaryExpression extends CompoundExpression {
   int get hashCode => hash3(left, operator, right);
 
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       other is BinaryExpression &&
       other.left == left &&
       other.operator == operator &&
