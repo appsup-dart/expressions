@@ -102,6 +102,16 @@ class CallExpression extends SimpleExpression {
   String toString() => '${callee.toTokenString()}(${arguments.join(', ')})';
 }
 
+class LambdaExpression extends SimpleExpression {
+  final List<Identifier> params;
+  final Expression body;
+
+  LambdaExpression(this.params, this.body);
+
+  @override
+  String toString() => '(${params.join(', ')}) => $body';
+}
+
 class UnaryExpression extends SimpleExpression {
   final String operator;
 

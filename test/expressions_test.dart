@@ -254,6 +254,15 @@ void main() {
     });
 
     group('member expressions', () {
+      test('literal members', () {
+        var evaluator = ExpressionEvaluator(memberAccessors: [
+          MemberAccessor<List>({'length': (v) => v.length}),
+          MemberAccessor<String>({'length': (v) => v.length})
+        ]);
+        expect(evaluator.eval(Expression.parse('[1,2,3].length'), {}), 3);
+        expect(evaluator.eval(Expression.parse("'hello'.length"), {}), 5);
+      });
+
       test('toString member', () {
         var evaluator = ExpressionEvaluator(memberAccessors: [
           MemberAccessor<Object?>({'toString': (v) => v.toString})
@@ -323,6 +332,27 @@ void main() {
         expect(evaluator.eval(Expression.parse('func1( 1 )'), context), 42);
         expect(evaluator.eval(Expression.parse('func2( 1, 2 )'), context), 42);
       });
+
+      test('callable functions', () {
+        var evaluator = ExpressionEvaluator();
+        var context = {
+          'sum': SumCallable(),
+        };
+        var expression = Expression.parse('sum(1, 2, 3, 4)');
+        var result = evaluator.eval(expression, context);
+        expect(result, 10);
+      });
+
+      test('lambda functions', () {
+        var evaluator = ExpressionEvaluator(memberAccessors: [
+          MemberAccessor<List>({
+            'where': (list) => WhereCallable(list),
+          }),
+        ]);
+        var expression = Expression.parse('[1,9,2,5,3,2].where((e) => e > 2)');
+        var result = evaluator.eval(expression, {});
+        expect(result, [9, 5, 3]);
+      });
     });
   });
 
@@ -335,4 +365,42 @@ void main() {
       expect(Expression.tryParse('5 1 6'), null);
     });
   });
+}
+
+class SumCallable extends Callable {
+  @override
+  dynamic call(ExpressionEvaluator evaluator, List args) {
+    return args.cast<num>().fold<num>(0, (p, e) => p + e);
+  }
+}
+
+class WhereCallable extends Callable {
+  final List<dynamic> list;
+
+  const WhereCallable(this.list);
+
+  @override
+  dynamic call(ExpressionEvaluator evaluator, List<dynamic> args) {
+    if (args.length != 1) {
+      throw ArgumentError('where() expects one argument, got ${args.length}');
+    }
+    final predicate = args[0];
+    if (predicate is! Callable) {
+      throw ArgumentError(
+          'Argument to where() must be a function, got ${predicate.runtimeType}');
+    }
+
+    final result = <dynamic>[];
+    for (final element in list) {
+      final predicateResult = predicate.call(evaluator, [element]);
+      if (predicateResult is! bool) {
+        throw ArgumentError(
+            'Predicate must return a boolean value, but got ${predicateResult.runtimeType}');
+      }
+      if (predicateResult) {
+        result.add(element);
+      }
+    }
+    return result;
+  }
 }

@@ -9,7 +9,7 @@ class ExpressionParser {
         (l) => l[1] == null
             ? l[0]
             : ConditionalExpression(l[0], l[1][0], l[1][1])));
-    token.set((literal | unaryExpression | variable).cast<Expression>());
+    token.set((unaryExpression | variable).cast<Expression>());
   }
 
   // Gobbles only identifiers
@@ -98,6 +98,14 @@ class ExpressionParser {
           arrayLiteral |
           mapLiteral)
       .cast();
+
+  Parser<Expression> get _primary =>
+      (literal |
+              lambdaExpression |
+              group |
+              thisExpression |
+              identifier.map((v) => Variable(v)))
+          .cast();
 
   // An individual part of a binary expression:
   // e.g. `foo.bar(baz)`, `1`, `'abc'`, `(a % 2)` (because it's in parenthesis)
@@ -203,13 +211,28 @@ class ExpressionParser {
           .map((l) => Map.fromEntries(l))
           .optionalWith({});
 
+  Parser<List<Identifier>> get lambdaParameters =>
+      (char('(').trim() &
+              identifier
+                  .plusSeparated(char(','.trim()))
+                  .map((p) => p.elements)
+                  .castList<Identifier>()
+                  .optionalWith([]) &
+              char(')').trim())
+          .pick(1)
+          .cast<List<Identifier>>();
+
+  Parser<LambdaExpression> get lambdaExpression =>
+      (lambdaParameters.trim().seq(string('=>').trim()).seq(expression))
+          .map((l) =>
+              LambdaExpression(l[0] as List<Identifier>, l[2] as Expression));
+
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`
   // It also gobbles function calls:
   // e.g. `Math.acos(obj.angle)`
-  Parser<Expression> get variable => groupOrIdentifier
-          .seq((memberArgument.cast() | indexArgument | callArgument).star())
-          .map((l) {
+  Parser<Expression> get variable =>
+      _primary.seq((memberArgument.cast() | indexArgument | callArgument).star()).map((l) {
         var a = l[0] as Expression;
         var b = l[1] as List;
         return b.fold(a, (Expression object, argument) {
@@ -233,9 +256,6 @@ class ExpressionParser {
   // then the expression probably doesn't have a `)`
   Parser<Expression> get group =>
       (char('(') & expression.trim() & char(')')).pick(1).cast();
-
-  Parser<Expression> get groupOrIdentifier =>
-      (group | thisExpression | identifier.map((v) => Variable(v))).cast();
 
   Parser<Identifier> get memberArgument =>
       (char('.') & identifier).pick(1).cast();
