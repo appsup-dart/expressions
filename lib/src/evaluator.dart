@@ -74,6 +74,9 @@ class ExpressionEvaluator {
     if (expression is ConditionalExpression) {
       return evalConditionalExpression(expression, context);
     }
+    if (expression is LambdaExpression) {
+      return evalLambdaExpression(expression, context);
+    }
     throw ArgumentError("Unknown expression type '${expression.runtimeType}'");
   }
 
@@ -117,6 +120,9 @@ class ExpressionEvaluator {
       CallExpression expression, Map<String, dynamic> context) {
     var callee = eval(expression.callee, context);
     var arguments = expression.arguments.map((e) => eval(e, context)).toList();
+    if (callee is Callable) {
+      return callee.call(this, arguments);
+    }
     return Function.apply(callee, arguments);
   }
 
@@ -198,6 +204,12 @@ class ExpressionEvaluator {
   }
 
   @protected
+  dynamic evalLambdaExpression(
+      LambdaExpression expression, Map<String, dynamic> context) {
+    return _Lambda(expression, context);
+  }
+
+  @protected
   dynamic getMember(dynamic obj, String member) {
     for (var a in memberAccessors) {
       if (a.canHandle(obj, member)) {
@@ -276,5 +288,42 @@ class _MemberAccessor<T> implements MemberAccessor<T> {
   @override
   dynamic getMember(T object, String member) {
     return accessors[member]!(object);
+  }
+}
+
+abstract class Callable {
+  const Callable();
+
+  dynamic call(ExpressionEvaluator evaluator, List args);
+}
+
+class _Lambda implements Callable {
+  final LambdaExpression expression;
+
+  /// The context in which the lambda was defined (lexical scope).
+  ///
+  /// A lambda represents a closure, which captures the context where it was
+  /// defined. When the lambda is called, it uses this definition-site context
+  /// to resolve variables, which is how closures work in Dart and most modern
+  /// languages.
+  final Map<String, dynamic> context;
+
+  const _Lambda(this.expression, this.context);
+
+  @override
+  dynamic call(ExpressionEvaluator evaluator, List args) {
+    var params = expression.params;
+    if (params.length != args.length) {
+      throw ArgumentError(
+          'Lambda expected ${params.length} arguments, but got ${args.length}.');
+    }
+    
+    var localContext = Map<String, dynamic>.from(context);
+    
+    for (var i = 0; i < params.length; i++) {
+      localContext[params[i].name] = args[i];
+    }
+    
+    return evaluator.eval(expression.body, localContext);
   }
 }

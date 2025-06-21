@@ -100,7 +100,11 @@ class ExpressionParser {
       .cast();
 
   Parser<Expression> get _primary =>
-      (literal | group | thisExpression | identifier.map((v) => Variable(v)))
+      (literal |
+              lambdaExpression |
+              group |
+              thisExpression |
+              identifier.map((v) => Variable(v)))
           .cast();
 
   // An individual part of a binary expression:
@@ -206,6 +210,22 @@ class ExpressionParser {
           .castList<MapEntry<Expression, Expression>>()
           .map((l) => Map.fromEntries(l))
           .optionalWith({});
+
+  Parser<List<Identifier>> get lambdaParameters =>
+      (char('(').trim() &
+              identifier
+                  .plusSeparated(char(','.trim()))
+                  .map((p) => p.elements)
+                  .castList<Identifier>()
+                  .optionalWith([]) &
+              char(')').trim())
+          .pick(1)
+          .cast<List<Identifier>>();
+
+  Parser<LambdaExpression> get lambdaExpression =>
+      (lambdaParameters.trim().seq(string('=>').trim()).seq(expression))
+          .map((l) =>
+              LambdaExpression(l[0] as List<Identifier>, l[2] as Expression));
 
   // Gobble a non-literal variable name. This variable name may include properties
   // e.g. `foo`, `bar.baz`, `foo['bar'].baz`
