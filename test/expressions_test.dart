@@ -254,6 +254,15 @@ void main() {
     });
 
     group('member expressions', () {
+      test('literal members', () {
+        var evaluator = ExpressionEvaluator(memberAccessors: [
+          MemberAccessor<List>({'length': (v) => v.length}),
+          MemberAccessor<String>({'length': (v) => v.length})
+        ]);
+        expect(evaluator.eval(Expression.parse('[1,2,3].length'), {}), 3);
+        expect(evaluator.eval(Expression.parse("'hello'.length"), {}), 5);
+      });
+
       test('toString member', () {
         var evaluator = ExpressionEvaluator(memberAccessors: [
           MemberAccessor<Object?>({'toString': (v) => v.toString})
