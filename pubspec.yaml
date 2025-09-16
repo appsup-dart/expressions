@@ -18,3 +18,22 @@ dev_dependencies:
   test: ^1.0.0
   lints: ^6.0.0
   fake_async: ^1.2.0
+  melos: ^7.0.0
+
+
+melos:
+  useRootAsPackage: true
+
+  ide:
+    intellij: false
+
+  command:
+    version:
+      linkToCommits: true
+
+  scripts:
+    preversion: 
+      exec: dart test -j 1
+
+
+  
