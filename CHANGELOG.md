@@ -1,28 +1,3 @@
-# Change Log
-
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
-
-## 2025-09-16
-
-### Changes
-
----
-
-Packages with breaking changes:
-
- - There are no breaking changes in this release.
-
-Packages with other changes:
-
- - [`expressions` - `v0.2.5+3`](#expressions---v0253)
-
----
-
-#### `expressions` - `v0.2.5+3`
-
- - **REFACTOR**: set min sdk to 3.0.0. ([44e8bbdf](https://github.com/appsup-dart/expressions/commit/44e8bbdf9922397cb0d001c30b00fd8f6de67241))
- - **REFACTOR**: support for petitparser ^7.0.0. ([be9a7f90](https://github.com/appsup-dart/expressions/commit/be9a7f90c5d4f4c335ddf86b25c3b215c9c377eb))
 
 ## 0.2.5+3
 
